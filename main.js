@@ -6,7 +6,7 @@ var usbguard = require('./usbguard.js')
 
 let tray = null;
 let usbDevices = [];
-var icon;
+var icon, iconAllow, iconBlock;
 
 // Function to create the tray icon and menu
 function createTray() {
@@ -36,19 +36,27 @@ function updateDeviceList() {
 // Function to list the USB devices in the tray menu
 function listUsbDevices() {
     const deviceMenuItems = usbDevices.map(device => ({
-        label: `(${device.number}) ${device.name} (${device.allowed})`,
-        submenu: [
-            {
-                label: 'Allow',
-                click: () => handleAllow(device.number)
-            },
-            {
-                label: 'Block',
-                click: () => handleBlock(device.number)
+        id: `${device.number}`,
+        label: `(${device.id}) ${device.name}`,
+        // submenu: [
+        //     {
+        //         label: 'Allow',
+        //         click: () => handleAllow(device.number)
+        //     },
+        //     {
+        //         label: 'Block',
+        //         click: () => handleBlock(device.number)
+        //     }
+        // ],
+        type: 'checkbox',
+        checked: device.allowed,
+        click: (menuItem) => {
+            if (menuItem.checked) {
+                usbguard.allow(menuItem.id)
+            } else {
+                usbguard.block(menuItem.id);
             }
-        ]
-        // type: 'checkbox',
-        // checked: device.allowed,
+        }
         
     }));
 
@@ -138,7 +146,9 @@ function runUsbGuardCommand(command) {
 }
 
 app.whenReady().then(() => {
-    icon = nativeImage.createFromPath(path.join(__dirname,'icon.png'))
+    icon = nativeImage.createFromPath(path.join(__dirname,'icon.png'));
+    iconAllow = nativeImage.createFromPath(path.join(__dirname,'allow.png'))
+    iconBlock = nativeImage.createFromPath(path.join(__dirname,'block.png'))
 
     createTray();
     updateDeviceList(); // Initially populate the device list

@@ -35,7 +35,30 @@ function ListDevices() {
     });
     return devices;
 }
+// Function to run USBGuard commands
+function runUsbGuardCommand(command) {
+    return new Promise((resolve, reject) => {
+        child_process.exec(command, (error, stdout, stderr) => {
+            if (error) {
+                reject(`Error: ${stderr}`);
+            } else {
+                resolve(stdout);
+            }
+        });
+    });
+}
+
+
+function HandleAllow(id) {
+    return runUsbGuardCommand("usbguard allow-device "+id);
+}
+function HandleBlock(id) {
+    return runUsbGuardCommand("usbguard block-device "+id);
+}
+
 
 module.exports = {
-    list: ListDevices
+    list: ListDevices,
+    allow: HandleAllow,
+    block: HandleBlock
 }

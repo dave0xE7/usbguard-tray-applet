@@ -1,11 +1,11 @@
 {
-  "name": "usbguard-applet",
+  "name": "usbguard-tray-applet",
   "version": "1.0.0",
-  "description": "",
+  "description": "adds a system tray applet for interacting with usbguard daemon on linux ",
   "main": "main.js",
   "scripts": {
     "start": "./node_modules/electron/dist/electron ."
   },
-  "author": "",
+  "author": "dave0xE7",
   "license": "ISC"
 }
