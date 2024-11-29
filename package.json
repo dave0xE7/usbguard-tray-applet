@@ -1,0 +1,11 @@
+{
+  "name": "usbguard-applet",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "./node_modules/electron/dist/electron ."
+  },
+  "author": "",
+  "license": "ISC"
+}

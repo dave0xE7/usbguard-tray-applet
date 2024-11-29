@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USBGuard Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>USBGuard Device Manager</h1>
+    <div id="device-list">
+        <h2>Connected Devices</h2>
+        <ul id="devices"></ul>
+    </div>
+    
+    <script>
+        // Assuming you have a way to get a list of connected USB devices (using some method)
+        // Here we will simulate the devices for the example
+
+        const deviceListElement = document.getElementById('devices');
+        
+       // Handle device updates (added or removed)
+       window.usbguard.onDeviceUpdate((event, devices) => {
+            // Clear the current device list
+            deviceListElement.innerHTML = '';
+
+            // Populate the device list
+            devices.forEach(device => {
+                const li = document.createElement('li');
+                li.textContent = `${device.deviceName} (ID: ${device.deviceAddress})`;
+
+                // Add buttons for allowing and blocking
+                const allowButton = document.createElement('button');
+                allowButton.textContent = 'Allow';
+                allowButton.onclick = () => handleAllow(device.deviceAddress);
+
+                const blockButton = document.createElement('button');
+                blockButton.textContent = 'Block';
+                blockButton.onclick = () => handleBlock(device.deviceAddress);
+
+                li.appendChild(allowButton);
+                li.appendChild(blockButton);
+                deviceListElement.appendChild(li);
+            });
+        });
+
+        async function handleAllow(deviceId) {
+            try {
+                const result = await window.usbguard.allowDevice(deviceId);
+                alert(`Device allowed: ${result}`);
+            } catch (error) {
+                alert(`Error: ${error}`);
+            }
+        }
+
+        async function handleBlock(deviceId) {
+            try {
+                const result = await window.usbguard.blockDevice(deviceId);
+                alert(`Device blocked: ${result}`);
+            } catch (error) {
+                alert(`Error: ${error}`);
+            }
+        }
+    </script>
+</body>
+</html>
