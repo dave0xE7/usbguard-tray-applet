@@ -12,29 +12,17 @@ var icon, iconAllow, iconBlock;
 function createTray() {
     tray = new Tray(path.join(__dirname, 'icon.png')); // Ensure you have a tray icon (e.g., "tray-icon.png")
     const contextMenu = Menu.buildFromTemplate([
-        { label: 'List USB Devices', click: updateDeviceList(), icon: icon },
+        { label: 'List USB Devices', click: listUsbDevices(), icon: icon },
         { label: 'Quit', click: () => app.quit() }
     ]);
     tray.setContextMenu(contextMenu);
     tray.setToolTip('USBGuard Tray Menu');
 }
 
-// Update the list of USB devices and refresh the context menu
-function updateDeviceList() {
-    usbDevices = usbguard.list();
-    // usbDetect.find((err, devices) => {
-    //     if (err) {
-    //         console.error('Error detecting devices:', err);
-    //         return;
-    //     }
-    //     usbDevices = devices;
-    //     listUsbDevices(); // Automatically update the list when devices change
-    // });
-    listUsbDevices();
-}
 
 // Function to list the USB devices in the tray menu
 function listUsbDevices() {
+    usbDevices = usbguard.list();
     const deviceMenuItems = usbDevices.map(device => ({
         id: `${device.number}`,
         label: `(${device.id}) ${device.name}`,
@@ -70,33 +58,33 @@ function listUsbDevices() {
     tray.setContextMenu(contextMenu);
 }
 
-let mainWindow;
+// let mainWindow;
 
-function createWindow() {
-    mainWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
-        webPreferences: {
-            preload: path.join(__dirname, 'preload.js'),
-            nodeIntegration: true
-        }
-    });
+// function createWindow() {
+//     mainWindow = new BrowserWindow({
+//         width: 800,
+//         height: 600,
+//         webPreferences: {
+//             preload: path.join(__dirname, 'preload.js'),
+//             nodeIntegration: true
+//         }
+//     });
 
-    mainWindow.loadFile('index.html');
-    mainWindow.on('closed', () => {
-        mainWindow = null;
-    });
-}
+//     mainWindow.loadFile('index.html');
+//     mainWindow.on('closed', () => {
+//         mainWindow = null;
+//     });
+// }
 
 // When a USB device is added or removed, send the updated list of devices to the renderer process
 // usbDetect.on('add', () => updateDevices());
 // usbDetect.on('remove', () => updateDevices());
 
 // Fetch the list of connected devices and send it to the renderer
-function updateDevices() {
-    const devices = ListDevices();
-    mainWindow.webContents.send('usbDevices:update', devices);
-}
+// function updateDevices() {
+//     const devices = ListDevices();
+//     mainWindow.webContents.send('usbDevices:update', devices);
+// }
 
 // app.whenReady().then(createWindow);
 
@@ -123,14 +111,14 @@ app.on('window-all-closed', () => {
 
 // Handle allowing or blocking devices via USBGuard CLI
 // ipcMain.handle('usbguard:allow', (event, deviceId) => {
-function handleAllow(deviceId) {
-    // return runUsbGuardCommand(`usbguard rule add --allow --device ${deviceId}`);
-    return runUsbGuardCommand(`usbguard allow-device ${deviceId}`);
-}
+// function handleAllow(deviceId) {
+//     // return runUsbGuardCommand(`usbguard rule add --allow --device ${deviceId}`);
+//     return runUsbGuardCommand(`usbguard allow-device ${deviceId}`);
+// }
 
-ipcMain.handle('usbguard:block', (event, deviceId) => {
-    return runUsbGuardCommand(`usbguard rule add --block --device ${deviceId}`);
-});
+// ipcMain.handle('usbguard:block', (event, deviceId) => {
+//     return runUsbGuardCommand(`usbguard rule add --block --device ${deviceId}`);
+// });
 
 // Function to run USBGuard commands
 function runUsbGuardCommand(command) {
@@ -151,5 +139,5 @@ app.whenReady().then(() => {
     iconBlock = nativeImage.createFromPath(path.join(__dirname,'block.png'))
 
     createTray();
-    updateDeviceList(); // Initially populate the device list
+    listUsbDevices(); // Initially populate the device list
 });
